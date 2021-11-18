@@ -9,7 +9,6 @@ from app import login
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
-    email = db.Column(db.String(128), unique=True)
     password  = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
 

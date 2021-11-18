@@ -1,20 +1,37 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+    <head>
+        {% if title %}
+            <title>{{title}}!</title>
+        {% else %}
+            <title>No Name</title>
+        {% endif %}
+    </head>
+    <body>
+        <h1>Login</h1>
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
 
-{% block content %}
-<h1>Sign in</h1>
+            <p> {{ form.username.label }} <br>
+            {{ form.username(size=32) }}</p>
 
-<form method="POST" novalidate>
-    {{ form.hidden_tag() }}
+            <p> {{ form.password.label }} <br>
+            {{ form.password(size=32) }}</p>
 
-    <p> {{ form.username.label }} <br>
-    {{ form.username(size=32) }}</p>
+            <p>{{ form.submit() }}</p>
+        </form><p>
+            <a href='/signup'> Don't have an account?  </a> 
 
-    <p> {{ form.password.label }} <br>
-    {{ form.password(size=32) }}</p>
-
-    <p> {{ form.remember_me.label }} <br>
-    {{ form.remember_me() }}</p>
-
-    <p>{{ form.submit() }}</p>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for m in messages %}
+            <li>{{ m }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
 </form>
-{% endblock %}
+    </body>
+</html>
+
