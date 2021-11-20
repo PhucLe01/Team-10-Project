@@ -66,6 +66,7 @@ def createcard(id):
     form = flashCardForm()
     if form.validate_on_submit():
         newCard = FlashCard(label = form.cardname.data, description = form.description.data, wrongguesscount = 0)
+        newCard.set_user(id)
         db.session.add(newCard)
         db.session.commit()
         flash('New flashcard created')
