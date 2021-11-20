@@ -16,3 +16,4 @@ class flashCardForm(FlaskForm):
     cardname = StringField('Card label', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])
     createcard = SubmitField('Create flash card')
+

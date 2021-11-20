@@ -28,8 +28,8 @@ class FlashCard(db.Model):
     wrongguesscount = db.Column(db.Integer)
     User = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def set_user(self, id):
-        self.User = id
+    def set_user(self, uid):
+        self.User = uid
 
 @login.user_loader
 def load_user(id):

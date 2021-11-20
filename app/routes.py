@@ -72,3 +72,9 @@ def createcard(id):
         flash('New flashcard created')
         return redirect(f'/home/{id}')
     return render_template('createflashcard.html', title = 'Create flashcard', form = form)
+
+@myapp_obj.route("/description/<int:uid>/<int:id>", methods = ['GET', 'POST'])
+def description(uid, id):
+    flashcard = FlashCard.query.filter_by(id = id).first()
+    description = flashcard.description
+    return render_template('description.html', title = 'Card Description', description = description, uid = uid)
