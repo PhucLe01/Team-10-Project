@@ -78,3 +78,12 @@ def description(uid, id):
     flashcard = FlashCard.query.filter_by(id = id).first()
     description = flashcard.description
     return render_template('description.html', title = 'Card Description', description = description, uid = uid)
+
+@myapp_obj.route("/deleteaccount/<int:uid>", methods = ['GET', 'POST'])
+def deleteAccount(uid):
+    target = User.query.filter_by(id = uid).first()
+    name = target.username
+    db.session.delete(target)
+    db.session.commit()
+    flash(f'User {name} has been deleted')
+    return redirect('/login')
