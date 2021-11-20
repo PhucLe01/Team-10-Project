@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="POST" novalidate>
+    {{ form.hidden_tag() }}
+
+    <p> {{ form.cardname.label }} <br>
+        {{ form.cardname(size=32) }}</p>
+
+    <p> {{ form.description.label }} <br>
+        {{ form.description(size=32) }}</p>
+
+    <p><a href='/home'> Back</a>
+        {{ form.createcard() }}</p>
+</form>
+{% endblock %}

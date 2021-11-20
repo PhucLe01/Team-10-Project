@@ -10,7 +10,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password  = db.Column(db.String(128))
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    card = db.relationship('FlashCard', backref = 'Users')
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -21,14 +21,12 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f'<User {self.id}: {self.username}>'
 
-class Post(db.Model):
+class FlashCard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(256))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return f'<Post {self.id}: {self.body}>'
+    label = db.Column(db.String)
+    description = db.Column(db.String)
+    wrongguesscount = db.Column(db.Integer)
+    User = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 @login.user_loader
 def load_user(id):

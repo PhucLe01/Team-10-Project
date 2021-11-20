@@ -9,17 +9,6 @@
     </head>
     <body>
         <h1>Sign up</h1>
-        <form method="POST" novalidate>
-            {{ form.hidden_tag() }}
-
-            <p> {{ form.username.label }} <br>
-            {{ form.username(size=32) }}</p>
-
-            <p> {{ form.password.label }} <br>
-            {{ form.password(size=32) }}</p>
-
-            <p>{{ form.submit() }}</p>
-        </form>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul>
@@ -29,6 +18,18 @@
         </ul>
         {% endif %}
         {% endwith %}
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <p> {{ form.username.label }} <br>
+            {{ form.username(size=32) }}</p>
+
+            <p> {{ form.password.label }} <br>
+            {{ form.password(size=32) }}</p>
+
+            <p><a href='/login'> Back</a>
+                {{ form.submit() }}</p>
+        </form>
 </form>
     </body>
 </html>

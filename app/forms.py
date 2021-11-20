@@ -12,3 +12,7 @@ class SignUpForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Sign up')
 
+class flashCardForm(FlaskForm):
+    cardname = StringField('Card label', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
+    createcard = SubmitField('Create flash card')
