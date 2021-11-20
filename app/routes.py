@@ -48,6 +48,14 @@ def SignUp():
 def home(id):
     posts = []
     allCards = FlashCard.query.filter_by(User = id).all()
+
+    for x in range(len(allCards)): #sorting algorithm from GeeksforGeeks
+        minRank = x
+        for y in range(x+1, len(allCards)):
+            if allCards[minRank].wrongguesscount < allCards[y].wrongguesscount:
+                minRank = y     
+        allCards[x], allCards[minRank] = allCards[minRank], allCards[x]
+
     uid = id
     if allCards is not None:
         for flashc in allCards:
@@ -55,7 +63,8 @@ def home(id):
                 {
                     'Label':f'{flashc.label}',
                     'Description':f'{flashc.description}',
-                    'id':f'{flashc.id}'
+                    'id':f'{flashc.id}',
+                    'wrongcount':f'{flashc.wrongguesscount}'
                 }
             ]
     return render_template('home.html', title = 'Flashcards', cardlist = posts, uid = uid)
@@ -77,7 +86,7 @@ def createcard(id):
 def description(uid, id):
     flashcard = FlashCard.query.filter_by(id = id).first()
     description = flashcard.description
-    return render_template('description.html', title = 'Card Description', description = description, uid = uid)
+    return render_template('description.html', title = 'Card Description', description = description, uid = uid, id = id)
 
 @myapp_obj.route("/deleteaccount/<int:uid>", methods = ['GET', 'POST'])
 def deleteAccount(uid):
@@ -87,3 +96,17 @@ def deleteAccount(uid):
     db.session.commit()
     flash(f'User {name} has been deleted')
     return redirect('/login')
+
+@myapp_obj.route("/incwrongcount/<int:uid>/<int:id>", methods = ['GET', 'POST'])
+def incwrongcount(uid, id):
+    flashcard = FlashCard.query.filter_by(id = id).first()
+    flashcard.inc_wrong_count()
+    db.session.commit()
+    return redirect(f'/home/{uid}')
+
+@myapp_obj.route("/decwrongcount/<int:uid>/<int:id>", methods = ['GET', 'POST'])
+def decwrongcount(uid, id):
+    flashcard = FlashCard.query.filter_by(id = id).first()
+    flashcard.dec_wrong_count()
+    db.session.commit()
+    return redirect(f'/home/{uid}')

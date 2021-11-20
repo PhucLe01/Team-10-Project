@@ -31,6 +31,13 @@ class FlashCard(db.Model):
     def set_user(self, uid):
         self.User = uid
 
+    def inc_wrong_count(self):
+        self.wrongguesscount = self.wrongguesscount + 1
+
+    def dec_wrong_count(self):
+        if self.wrongguesscount > 0:
+            self.wrongguesscount = self.wrongguesscount - 1
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
