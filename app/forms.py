@@ -17,3 +17,6 @@ class flashCardForm(FlaskForm):
     description = StringField('Description', validators=[DataRequired()])
     createcard = SubmitField('Create flash card')
 
+class FlashShareForm(FlaskForm):
+    name = StringField('Username', validators=[DataRequired()])
+    share = SubmitField('Share')

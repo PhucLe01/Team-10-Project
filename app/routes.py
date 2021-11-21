@@ -1,5 +1,5 @@
 from app import myapp_obj
-from app.forms import LoginForm, SignUpForm, flashCardForm
+from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm
 from flask import render_template, flash, redirect
 
 from app import db
@@ -110,3 +110,21 @@ def decwrongcount(uid, id):
     flashcard.dec_wrong_count()
     db.session.commit()
     return redirect(f'/home/{uid}')
+
+@myapp_obj.route("/shareflashcard/<int:uid>/<int:id>", methods = ['GET', 'POST'])
+def shareflashcard(uid, id):
+    form = FlashShareForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username = form.name.data).first()
+        if user is None:
+            flash('User does not exist')
+        elif user.id is uid:
+            flash('Cannot share with yourself')
+        else:
+            card = FlashCard.query.filter_by(id = id).first()
+            newCard = FlashCard(label = card.label, description = card.description, wrongguesscount = 0)
+            newCard.set_user(user.id)
+            db.session.add(newCard)
+            db.session.commit()
+            return redirect(f'/home/{uid}')
+    return render_template('shareflashcard.html', title = 'Share flashcard with another user', form = form)
