@@ -58,6 +58,7 @@ class Task(db.Model):
 
     def set_status(self):
         self.status = True
+        
 
 @login.user_loader
 def load_user(id):

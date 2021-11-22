@@ -1,5 +1,6 @@
 from app import myapp_obj
-from datetime import datetime, date
+from datetime import datetime
+import time
 from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm, TaskForm
 from flask import render_template, flash, redirect
 
@@ -172,3 +173,16 @@ def finishtask(uid, id):
     task.set_status()
     db.session.commit()
     return redirect(f'/taskviewer/{uid}')
+
+@myapp_obj.route("/pomodorostudy/<int:uid>/<int:t>", methods = ['GET', 'POST'])
+def study(uid, t):
+    if t > 0:
+        mins, secs = divmod(t, 60)
+        timer = '{:02d}:{:02d}'.format(mins, secs)
+        t -= 5
+        time.sleep(5)
+        return redirect(f'/pomodorostudy/{uid}/{t}')
+        
+    else:
+        timer = '00:00'
+    return render_template('pomodorostudy.html', title = 'Study time', timer = timer, uid = uid)
