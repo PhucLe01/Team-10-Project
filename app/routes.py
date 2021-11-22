@@ -1,9 +1,10 @@
 from app import myapp_obj
-from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm
+from datetime import datetime, date
+from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm, TaskForm
 from flask import render_template, flash, redirect
 
 from app import db
-from app.models import User, FlashCard
+from app.models import User, FlashCard, Task
 from flask_login import current_user, login_user, logout_user, login_required
 
 @myapp_obj.route("/")
@@ -80,7 +81,7 @@ def createcard(id):
         db.session.commit()
         flash('New flashcard created')
         return redirect(f'/home/{id}')
-    return render_template('createflashcard.html', title = 'Create flashcard', form = form)
+    return render_template('createflashcard.html', title = 'Create flashcard', form = form, uid = id)
 
 @myapp_obj.route("/description/<int:uid>/<int:id>", methods = ['GET', 'POST'])
 def description(uid, id):
@@ -99,7 +100,7 @@ def deleteAccount(uid):
 
 @myapp_obj.route("/incwrongcount/<int:uid>/<int:id>", methods = ['GET', 'POST'])
 def incwrongcount(uid, id):
-    flashcard = FlashCard.query.filter_by(id = id).first()
+    flashcard = FlashCard.query.filter_by(id = uid).first()
     flashcard.inc_wrong_count()
     db.session.commit()
     return redirect(f'/home/{uid}')
@@ -127,4 +128,47 @@ def shareflashcard(uid, id):
             db.session.add(newCard)
             db.session.commit()
             return redirect(f'/home/{uid}')
-    return render_template('shareflashcard.html', title = 'Share flashcard with another user', form = form)
+    return render_template('shareflashcard.html', title = 'Share flashcard with another user', form = form, uid = uid)
+
+@myapp_obj.route("/taskviewer/<int:uid>")
+def taskviewer(uid):
+    posts = []
+    alltasks = Task.query.filter_by(User = uid).all()
+
+    # uid = id
+    if alltasks is not None:
+        for task in alltasks:
+            posts = posts + [
+                {
+                    'Name':f'{task.label}',
+                    'Start_date':f'{task.startdate.strftime("%m/%d/%Y")}',
+                    'id':f'{task.id}',
+                    'Deadline':f'{task.deadline.strftime("%m/%d/%Y")}',
+                    'Status':f'{task.status}'
+                }
+            ]
+    return render_template('taskview.html', title = 'Task viewer', alltasks = posts, uid = uid)
+
+@myapp_obj.route("/createtask/<int:uid>", methods = ['GET', 'POST'])
+def createtask(uid):
+    form = TaskForm()
+    if form.validate_on_submit():
+        try:
+            newtask = Task(label = form.name.data)
+            newtask.set_startdate(form.startdate.data)
+            newtask.set_deadline(form.deadline.data)
+            newtask.set_user(uid)
+            db.session.add(newtask)
+            db.session.commit()
+            flash('New task added')
+            return redirect(f'/taskviewer/{uid}')
+        except:
+            flash('Invalid input')
+    return render_template('createtask.html', title = 'Create task', form = form, uid = uid)
+
+@myapp_obj.route("/finishtask/<int:uid>/<int:id>", methods = ['GET', 'POST'])
+def finishtask(uid, id):
+    task = Task.query.filter_by(id = id).first()
+    task.set_status()
+    db.session.commit()
+    return redirect(f'/taskviewer/{uid}')

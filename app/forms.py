@@ -20,3 +20,9 @@ class flashCardForm(FlaskForm):
 class FlashShareForm(FlaskForm):
     name = StringField('Username', validators=[DataRequired()])
     share = SubmitField('Share')
+
+class TaskForm(FlaskForm):
+    name = StringField('Task', validators=[DataRequired()])
+    startdate = StringField('Start date (mm/dd/yyyy)', validators = [DataRequired()])
+    deadline = StringField('Deadline (mm/dd/yyyy)', validators = [DataRequired()])
+    submit = SubmitField('submit')

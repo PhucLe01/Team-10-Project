@@ -4,6 +4,7 @@
 <div>
     <p>My Website:</p>
     <a href="/createcard/{{ uid }}">Create flashcard</a>
+    <a href="/taskviewer/{{ uid }}">View task</a>
     <a href="/logout">Logout</a>
     <a href="/deleteaccount/{{ uid }}">Delete account</a>
 </div>
@@ -16,7 +17,6 @@
     <tr>
         <td>
             {{ post.Label }}
-            {{ post.wrongcount }}
         </td>
         <td>
             <a href="/description/{{ uid }}/{{ post.id }}">Description</a>

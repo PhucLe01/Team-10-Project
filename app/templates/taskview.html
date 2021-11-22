@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <a href="/home/{{ uid }}">Home</a>
+    <a href="/createtask/{{ uid }}">Add task</a>
+</div>
+<table class="center">
+    <tr>
+        <th>Task</th>
+        <th>Start date</th>
+        <th>Deadline</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    {% for post in alltasks %}
+    <tr>
+        <td>
+            {{ post.Name }}
+        </td>
+        <td>
+            {{ post.Start_date }}
+        </td>
+        <td>
+            {{ post.Deadline }}
+        </td>
+        <td>
+            {% if post.Status == 'True' %}
+                Completed
+            {% else %}
+                Not Completed
+            {% endif %}
+        </td>
+        <td>
+            <a href="/finishtask/{{ uid }}/{{ post.id }}">Mark as complete</a>
+        </td> 
+    </tr>  
+    {% endfor %}
+
+</table> 
+    
+{% endblock %}
