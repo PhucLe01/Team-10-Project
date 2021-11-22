@@ -181,6 +181,7 @@ def study(uid, t):
         timer = '{:02d}:{:02d}'.format(mins, secs)
         t -= 5
         time.sleep(5)
+        #change to javascript so we can redirect inside the html
         return redirect(f'/pomodorostudy/{uid}/{t}')
         
     else:
