@@ -2,7 +2,8 @@ from app import myapp_obj
 from datetime import datetime
 import time
 from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm, TaskForm
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, make_response
+import pdfkit
 
 from app import db
 from app.models import User, FlashCard, Task
@@ -101,7 +102,7 @@ def deleteAccount(uid):
 
 @myapp_obj.route("/incwrongcount/<int:uid>/<int:id>", methods = ['GET', 'POST'])
 def incwrongcount(uid, id):
-    flashcard = FlashCard.query.filter_by(id = uid).first()
+    flashcard = FlashCard.query.filter_by(id = id).first()
     flashcard.inc_wrong_count()
     db.session.commit()
     return redirect(f'/home/{uid}')
@@ -176,14 +177,56 @@ def finishtask(uid, id):
 
 @myapp_obj.route("/pomodorostudy/<int:uid>/<int:t>", methods = ['GET', 'POST'])
 def study(uid, t):
-    if t > 0:
+    if t == 1500:
+        timer = '25:00'
+        t -= 5
+        return render_template('pomodorostudy.html', title = 'Study time', timer = timer, uid = uid, t = t)
+    if t >= 0:
         mins, secs = divmod(t, 60)
         timer = '{:02d}:{:02d}'.format(mins, secs)
         t -= 5
         time.sleep(5)
-        #change to javascript so we can redirect inside the html
-        return redirect(f'/pomodorostudy/{uid}/{t}')
-        
-    else:
-        timer = '00:00'
-    return render_template('pomodorostudy.html', title = 'Study time', timer = timer, uid = uid)
+    return render_template('pomodorostudy.html', title = 'Study time', timer = timer, uid = uid, t = t)
+
+@myapp_obj.route("/pomodorobreak/<int:uid>/<int:t>", methods = ['GET', 'POST'])
+def breaktime(uid, t):
+    if t == 300:
+        timer = '5:00'
+        t -= 5
+        return render_template('pomodorobreak.html', title = 'Break time', timer = timer, uid = uid, t = t)
+    if t >= 0:
+        mins, secs = divmod(t, 60)
+        timer = '{:02d}:{:02d}'.format(mins, secs)
+        t -= 5
+        time.sleep(5)
+    return render_template('pomodorobreak.html', title = 'Break time', timer = timer, uid = uid, t = t)
+
+@myapp_obj.route("/flashcardtopdf/<int:uid>")
+def flashcardpdf(uid):
+    posts = []
+    allCards = FlashCard.query.filter_by(User = uid).all()
+
+    for x in range(len(allCards)): #sorting algorithm from GeeksforGeeks
+        minRank = x
+        for y in range(x+1, len(allCards)):
+            if allCards[minRank].wrongguesscount < allCards[y].wrongguesscount:
+                minRank = y     
+        allCards[x], allCards[minRank] = allCards[minRank], allCards[x]
+
+    # uid = id
+    if allCards is not None:
+        for flashc in allCards:
+            posts = posts + [
+                {
+                    'Label':f'{flashc.label}',
+                    'Description':f'{flashc.description}',
+                    'id':f'{flashc.id}',
+                    'wrongcount':f'{flashc.wrongguesscount}'
+                }
+            ]
+    rendered = render_template('flashcardtopdf.html', title = 'Flashcards', cardlist = posts, uid = uid)
+    pdf = pdfkit.from_string(rendered, False)
+    response = make_response(pdf)
+    response.headers['content-type'] = 'application/pdf'
+    response.headers['content-dispsition'] = 'inline; filename=output.pdf'
+    return response

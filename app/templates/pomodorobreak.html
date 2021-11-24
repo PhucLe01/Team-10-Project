@@ -5,9 +5,9 @@
 <p>{{ timer }}</p>
 
 <p><a href='/taskviewer/{{ uid }}'>Back</a>
-    <a href="/pomodorobreak/{{ uid }}/300">5 minute timer</a></p>
+    <a href="/pomodorostudy/{{ uid }}/1500">25 minute timer</a></p>
 <script>
     if( '{{ t }}' >= 0 )
-        window.location.replace('http://127.0.0.1:5000/pomodorostudy/{{ uid }}/{{ t }}')
+        window.location.replace('http://127.0.0.1:5000/pomodorobreak/{{ uid }}/{{ t }}')
 </script>
 {% endblock %}

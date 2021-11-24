@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% if title %}
+            <title>{{title}}</title>
+        {% else %}
+            <title>No Name</title>
+        {% endif %}
+    </head>
+    <body>
+        <p>{{ username }}'s flashcards</p>
+        <table class="center">
+            <tr>
+                <th>Card</th>
+                <th>Description</th>
+            </tr>
+            {% for post in cardlist %}
+            <tr>
+                <td>
+                    {{ post.Label }}
+                </td>
+                <td>
+                    {{ description }}
+                </td> 
+            </tr>  
+            {% endfor %}
+        
+        </table> 
+    </body>
+</html>
