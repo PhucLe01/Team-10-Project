@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
@@ -25,4 +26,9 @@ class TaskForm(FlaskForm):
     name = StringField('Task', validators=[DataRequired()])
     startdate = StringField('Start date (mm/dd/yyyy)', validators = [DataRequired()])
     deadline = StringField('Deadline (mm/dd/yyyy)', validators = [DataRequired()])
+    submit = SubmitField('submit')
+
+class NoteForm(FlaskForm):
+    name = StringField('name', validators={DataRequired()})
+    note = FileField('file', validators={DataRequired()})
     submit = SubmitField('submit')

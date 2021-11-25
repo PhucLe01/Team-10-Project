@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(128))
     card = db.relationship('FlashCard', backref = 'Users')
     task = db.relationship('Task', backref = 'Users')
+    note = db.relationship('Note', backref = 'Users')
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -59,6 +60,14 @@ class Task(db.Model):
     def set_status(self):
         self.status = True
         
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    data = db.Column(db.LargeBinary)
+    User = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def set_user(self, uid):
+        self.User = uid
 
 @login.user_loader
 def load_user(id):

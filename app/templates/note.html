@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <a href="/home/{{ uid }}">Home</a>
+    <a href="/noteuploadpage/{{ uid }}">Upload Markdown notes</a>
+</div>
+<table class="center">
+    <tr>
+        <th>Notes</th>
+    </tr>
+    {% for post in allnotes %}
+    <tr>
+        <td>
+            {{ post.Name }}
+        </td>
+    </tr>  
+    {% endfor %}
+</table> 
+    
+{% endblock %}

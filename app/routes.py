@@ -1,12 +1,12 @@
 from app import myapp_obj
 from datetime import datetime
 import time
-from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm, TaskForm
+from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm, TaskForm, NoteForm
 from flask import render_template, flash, redirect, make_response
 import pdfkit
 
 from app import db
-from app.models import User, FlashCard, Task
+from app.models import User, FlashCard, Task, Note
 from flask_login import current_user, login_user, logout_user, login_required
 
 @myapp_obj.route("/")
@@ -47,10 +47,10 @@ def SignUp():
             flash(f'The user {form.username.data} already exist.')
     return render_template('signup.html', title = 'Sign up', form = form)
 
-@myapp_obj.route("/home/<int:id>")
-def home(id):
+@myapp_obj.route("/home/<int:uid>")
+def home(uid):
     posts = []
-    allCards = FlashCard.query.filter_by(User = id).all()
+    allCards = FlashCard.query.filter_by(User = uid).all()
 
     for x in range(len(allCards)): #sorting algorithm from GeeksforGeeks
         minRank = x
@@ -59,7 +59,6 @@ def home(id):
                 minRank = y     
         allCards[x], allCards[minRank] = allCards[minRank], allCards[x]
 
-    uid = id
     if allCards is not None:
         for flashc in allCards:
             posts = posts + [
@@ -137,7 +136,6 @@ def taskviewer(uid):
     posts = []
     alltasks = Task.query.filter_by(User = uid).all()
 
-    # uid = id
     if alltasks is not None:
         for task in alltasks:
             posts = posts + [
@@ -201,6 +199,31 @@ def breaktime(uid, t):
         time.sleep(5)
     return render_template('pomodorobreak.html', title = 'Break time', timer = timer, uid = uid, t = t)
 
+@myapp_obj.route("/note/<int:uid>")
+def note(uid):
+    posts = []
+    allnotes = Note.query.filter_by(User = uid).all()
+
+    if allnotes is not None:
+        for note in allnotes:
+            posts = posts + [
+                {
+                    'Name':f'{note.name}',
+                    'id':f'{note.id}'
+                }
+            ]
+    return render_template('note.html', title = 'Notes', allnotes = posts, uid = uid)
+
+@myapp_obj.route("/noteuploadpage/<int:uid>", methods = ['GET', 'POST'])
+def noteuploadpage(uid):
+    form = NoteForm()
+    if form.validate_on_submit():
+        newnote = Note(name = form.name.data, data = form.note.data.read())
+        newnote.set_user(uid)
+        db.session.add(newnote)
+        db.session.commit()
+    return render_template('uploadnote.html', title = 'Upload', form = form, uid = uid)
+
 @myapp_obj.route("/flashcardtopdf/<int:uid>")
 def flashcardpdf(uid):
     posts = []
@@ -213,7 +236,6 @@ def flashcardpdf(uid):
                 minRank = y     
         allCards[x], allCards[minRank] = allCards[minRank], allCards[x]
 
-    # uid = id
     if allCards is not None:
         for flashc in allCards:
             posts = posts + [

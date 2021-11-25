@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<h1>Break timer</h1>
 <p>{{ timer }}</p>
 
 <p><a href='/taskviewer/{{ uid }}'>Back</a>
-    <a href="/pomodorostudy/{{ uid }}/1500">25 minute timer</a></p>
+    <a href="/pomodorostudy/{{ uid }}/1500">Start study timer</a></p>
 <script>
     if( '{{ t }}' >= 0 )
         window.location.replace('http://127.0.0.1:5000/pomodorobreak/{{ uid }}/{{ t }}')
