@@ -2,9 +2,10 @@ from app import myapp_obj
 from datetime import datetime
 import time
 from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm, TaskForm, NoteForm
-from flask import render_template, flash, redirect, make_response
+from flask import render_template, flash, redirect, make_response, send_file
 import pdfkit
-
+import pypandoc
+from io import BytesIO
 from app import db
 from app.models import User, FlashCard, Task, Note
 from flask_login import current_user, login_user, logout_user, login_required
@@ -223,6 +224,26 @@ def noteuploadpage(uid):
         db.session.add(newnote)
         db.session.commit()
     return render_template('uploadnote.html', title = 'Upload', form = form, uid = uid)
+
+@myapp_obj.route("/viewnote/<int:uid>/<int:id>", methods = ['GET', 'POST'])
+def viewnote(uid, id):
+    note = Note.query.filter_by(id = id).first()
+    content = BytesIO(note.data).read()
+    # write_bytesio_to_file('notetemp.md', content)
+    # textfile = pypandoc.convert_file('notetemp.md', 'html', outputfile=f'noteviewtemp.html')
+    return render_template('viewnote.html', title = 'Note', uid = uid, id = id, content = content)
+
+@myapp_obj.route("/notetopdf/<int:id>", methods = ['GET', 'POST'])
+def notetopdf(id):
+    note = Note.query.filter_by(id = id).first()
+    content = BytesIO(note.data)
+    write_bytesio_to_file('notetemp.md', content)
+    filepdf = pypandoc.convert_file('notetemp.md', 'html', outputfile=f'{note.name}.pdf')
+    return send_file(filepdf, attachment_filename=f'{note.name}.pdf', as_attachment=True)
+
+def write_bytesio_to_file(filename, bytesio): #code from TechOverflow
+    with open(filename, "wb") as outfile:
+        outfile.write(bytesio.getbuffer())
 
 @myapp_obj.route("/flashcardtopdf/<int:uid>")
 def flashcardpdf(uid):
