@@ -1,7 +1,7 @@
 from app import myapp_obj
 from datetime import datetime
 import time
-from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm, TaskForm, NoteForm
+from app.forms import LoginForm, SignUpForm, flashCardForm, FlashShareForm, TaskForm, NoteForm, NoteShareForm
 from flask import render_template, flash, redirect, make_response, send_file
 import pdfkit
 import pypandoc
@@ -36,6 +36,13 @@ def login():
     Log the user in
 
     This fucntion will log the user into their account and bring them to the home page if the credentials are correct
+
+        Returns:
+            Redirect to itself 
+            Or
+            template to login.html
+            Or
+            redirect to route /home
     '''
     form = LoginForm()
     if form.validate_on_submit():
@@ -229,7 +236,7 @@ def shareflashcard(uid, id):
             db.session.add(newCard)
             db.session.commit()
             return redirect(f'/home/{uid}')
-    return render_template('shareflashcard.html', title = 'Share flashcard with another user', form = form, uid = uid)
+    return render_template('shareflashcard.html', title = 'Share flashcard', form = form, uid = uid)
 
 @myapp_obj.route("/taskviewer/<int:uid>")
 def taskviewer(uid):
@@ -439,6 +446,36 @@ def notetopdf(id):
     write_bytesio_to_file('notetemp.md', content)
     filepdf = pypandoc.convert_file('notetemp.md', 'html', outputfile=f'{note.name}.pdf')
     return send_file(filepdf, attachment_filename=f'{note.name}.pdf', as_attachment=True)
+
+@myapp_obj.route("/sharenote/<int:uid>/<int:id>", methods = ['GET', 'POST'])
+def sharenote(uid, id):
+    '''
+    Share current note to another user
+
+    This function will add a copy of the current note to the user whos name was inputed. It redirect the user to the note page afterwards
+
+    Parameter
+    -------
+    uid : int
+        The id of the user that is logged in
+    id : int
+        The id of the currrent note
+    '''
+    form = NoteShareForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username = form.name.data).first()
+        if user is None:
+            flash('User does not exist')
+        elif user.id is uid:
+            flash('Cannot share with yourself')
+        else:
+            note = Note.query.filter_by(id = id).first()
+            newnote = Note(name = note.name, data = note.data)
+            newnote.set_user(user.id)
+            db.session.add(newnote)
+            db.session.commit()
+            return redirect(f'/note/{uid}')
+    return render_template('sharenote.html', title = 'Share note', form = form, uid = uid)
 
 def write_bytesio_to_file(filename, bytesio): #code from TechOverflow
     '''

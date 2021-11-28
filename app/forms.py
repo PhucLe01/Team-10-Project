@@ -50,3 +50,10 @@ class NoteForm(FlaskForm):
     name = StringField('name', validators={DataRequired()})
     note = FileField('file', validators={DataRequired()})
     submit = SubmitField('submit')
+
+class NoteShareForm(FlaskForm):
+    '''
+    This class contain the form for the share note with other users page
+    '''
+    name = StringField('Username', validators=[DataRequired()])
+    share = SubmitField('Share')
