@@ -17,6 +17,9 @@ def begin():
 
     This function will bring the user to the login page
 
+    return
+    -------
+    redirect to /login
     '''
     return redirect("/login")
 
@@ -26,6 +29,10 @@ def logout():
     Log the user out
 
     This fucntion will log the user out of their account and redirect them to the login page
+
+    return
+    -------
+    redirect /login
     '''
     logout_user()
     return redirect('/login')
@@ -37,12 +44,11 @@ def login():
 
     This fucntion will log the user into their account and bring them to the home page if the credentials are correct
 
-        Returns:
-            Redirect to itself 
-            Or
-            template to login.html
-            Or
-            redirect to route /home
+    return
+    -------
+    Render template login.html and redirect to /home if successful
+    Or
+    redirect to itself if unsuccessful
     '''
     form = LoginForm()
     if form.validate_on_submit():
@@ -61,6 +67,10 @@ def SignUp():
     Create an ccount
 
     This fuction will create an account if the input username and password are valid
+
+    return
+    -------
+    Render template signup.html and redirect to /login if an account if created
     '''
     form = SignUpForm()
     if form.validate_on_submit():
@@ -87,6 +97,10 @@ def home(uid):
     -------
     uid : int
         The id of the user that is logged in
+
+    return
+    -------
+    Redner template home.html
     '''
     posts = []
     allCards = FlashCard.query.filter_by(User = uid).all()
@@ -122,6 +136,10 @@ def createcard(uid):
     -------
     uid : int
         The id of the user that is logged in
+
+    return
+    -------
+    Render template createflashcard.html and redirect to /home if a flashcard is created
     '''
     form = flashCardForm()
     if form.validate_on_submit():
@@ -146,6 +164,10 @@ def description(uid, id):
         The id of the user that is logged in
     id : int
         The id of the flashcard that the user is seeing the description of
+
+    return
+    -------
+    Render template description.html
     '''
     flashcard = FlashCard.query.filter_by(id = id).first()
     description = flashcard.description
@@ -162,6 +184,10 @@ def deleteAccount(uid):
     -------
     uid : int
         The id of the user that is logged in
+
+    return
+    -------
+    Redirect to /login
     '''
     target = User.query.filter_by(id = uid).first()
     name = target.username
@@ -183,6 +209,10 @@ def incwrongcount(uid, id):
         The id of the user that is logged in
     id : int
         The id of the currrent flashcard
+
+    return
+    -------
+    Redirect to /home
     '''
     flashcard = FlashCard.query.filter_by(id = id).first()
     flashcard.inc_wrong_count()
@@ -202,6 +232,10 @@ def decwrongcount(uid, id):
         The id of the user that is logged in
     id : int
         The id of the currrent flashcard
+
+    return
+    -------
+    Redirect to /home
     '''
     flashcard = FlashCard.query.filter_by(id = id).first()
     flashcard.dec_wrong_count()
@@ -221,6 +255,10 @@ def shareflashcard(uid, id):
         The id of the user that is logged in
     id : int
         The id of the currrent flashcard
+
+    return
+    -------
+    Render template shareflashcard.html and redirect to /home if the flashcard was shared with another user
     '''
     form = FlashShareForm()
     if form.validate_on_submit():
@@ -249,6 +287,10 @@ def taskviewer(uid):
     -------
     uid : int
         The id of the user that is logged in
+
+    return
+    -------
+    Render template taskview.html
     '''
     posts = []
     alltasks = Task.query.filter_by(User = uid).all()
@@ -277,6 +319,10 @@ def createtask(uid):
     -------
     uid : int
         The id of the user that is logged in
+
+    return
+    -------
+    Render template createtask.html and redirect to /taskviewer if a task was created
     '''
     form = TaskForm()
     if form.validate_on_submit():
@@ -306,6 +352,10 @@ def finishtask(uid, id):
         The id of the user that is logged in
     id : int
         The id of the selected task
+
+    return
+    -------
+    Redirect to /taskviewer
     '''
     task = Task.query.filter_by(id = id).first()
     task.set_status()
@@ -325,6 +375,10 @@ def study(uid, t):
         The id of the user that is logged in
     t : int
         The time left on the timer in seconds
+
+    return
+    -------
+    Render template pomodorostudy.html
     '''
     if t == 1500:
         timer = '25:00'
@@ -350,6 +404,10 @@ def breaktime(uid, t):
         The id of the user that is logged in
     t : int
         The time left on the timer in seconds
+
+    return
+    -------
+    Render template pomodorobreak.html
     '''
     if t == 300:
         timer = '5:00'
@@ -373,6 +431,10 @@ def note(uid):
     -------
     uid : int
         The id of the user that is logged in
+
+    return
+    -------
+    Render template note.html
     '''
     posts = []
     allnotes = Note.query.filter_by(User = uid).all()
@@ -398,6 +460,10 @@ def noteuploadpage(uid):
     -------
     uid : int
         The id of the user that is logged in
+
+    return
+    -------
+    Render template uploadnote.html
     '''
     form = NoteForm()
     if form.validate_on_submit():
@@ -421,6 +487,10 @@ def viewnote(uid, id):
         The id of the user that is logged in
     id : int
         The id of the currrent note
+
+    return
+    -------
+    Render template viewnote.html
     '''
     note = Note.query.filter_by(id = id).first()
     content = BytesIO(note.data).read()
@@ -440,6 +510,10 @@ def notetopdf(id):
     -------
     id : int
         The id of the currrent note
+
+    return
+    -------
+    PDF file 
     '''
     note = Note.query.filter_by(id = id).first()
     content = BytesIO(note.data)
@@ -460,6 +534,10 @@ def sharenote(uid, id):
         The id of the user that is logged in
     id : int
         The id of the currrent note
+
+    return
+    -------
+    Render template sharenote.html
     '''
     form = NoteShareForm()
     if form.validate_on_submit():
@@ -505,6 +583,10 @@ def flashcardpdf(uid):
     -------
     uid : int
         The id of the user that is logged in
+
+    return
+    -------
+    PDF file
     '''
     posts = []
     allCards = FlashCard.query.filter_by(User = uid).all()
