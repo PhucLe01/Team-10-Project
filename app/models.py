@@ -29,7 +29,6 @@ class User(UserMixin, db.Model):
         -------
         password : String
             input to be use as the password
-
         '''
         self.password = generate_password_hash(password)
 
